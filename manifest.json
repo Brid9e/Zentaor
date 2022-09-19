@@ -1,0 +1,23 @@
+{
+  "name": "BoomZentao",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "The best Zentao plugs.",
+  "icons": {
+    "16": "icons/zentao16x16.png",
+    "32": "icons/zentao32x32.png",
+    "48": "icons/zentao48x48.png",
+    "128": "icons/zentao128x128.png"
+  },
+  "browser_action": {
+    "default_popup": "html/index.html",
+    "default_title": "The best Zentao plugs."
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://zentao.xzxyun.com/*", "http://zentao.xzxyun.com/zentao/*"],
+      "js": ["js/index.js"],
+      "css": ["css/item.css"]
+    }
+  ]
+}
