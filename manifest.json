@@ -15,9 +15,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://zentao.xzxyun.com/zentao/*"],
-      "js": ["js/axios.min.js", "js/index.js"],
-      "css": ["css/item.css"]
+      "matches": [
+        "http://zentao.xzxyun.com/zentao/*"
+      ],
+      "js": [
+        "js/dayjs.min.js",
+        "js/axios.min.js",
+        "js/index.js"
+      ],
+      "css": [
+        "css/item.css"
+      ]
     }
   ]
 }

@@ -1,0 +1,19 @@
+.plugs-text{
+  margin-left: 200px;
+  color: red;
+}
+
+.pluts-dialog {
+  width: 500px;
+  /* height: 300px; */
+  background-color: white;
+  border-radius: 4px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1016;
+}
+
+/* <li class=" " data-id="testtask"><a href="/zentao/my-work-testtask-wait.html">测试单<span class="label label-light label-badge">0</span></a>
+</li> */
