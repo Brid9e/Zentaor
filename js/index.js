@@ -1,9 +1,9 @@
 /*
  * @Author: Joe
  * @Date: 2022-09-20 09:05:32
- * @LastEditTime: 2022-09-21 10:56:14
+ * @LastEditTime: 2022-09-21 13:53:39
  * @LastEditors: Joe
- * @FilePath: /ZentaoTest/js/index.js
+ * @FilePath: /Zentaor/js/index.js
  */
 let dialog
 let d_table
@@ -25,62 +25,27 @@ window.onload = () => {
   // let plutsDialog = document.body.querySelector('.plugin-dialog')
   // console.log(plutsDialog)
   // appsBar.innerHTML = appsBar.innerHTML + '<span class="plugs-text">你好</span>'
-  getDetail()
-  // initListData();
+  // getDetailAll();
+  initListData();
 };
 
 async function initListData() {
   let iframe = document.querySelector('iframe');
-  let tb_arr = [];
-  let th_obj = {};
   const doc = iframe.contentWindow.document
-  const table = doc.querySelector('table.has-sort-head').children;
   let nav = doc.querySelector('#subNavbar').children[0]
-  const tHeader = table[0];
-  const tBody = table[1];
-  let handle_arr = {};
-
-  for (let index in tHeader.children[0].children) {
-    th_obj[index] = tHeader.children[0].children[index].title;
-  }
-
-  for (let tb_item_level of tBody.children) {
-    let tb_obj = {};
-    for (let index in tb_item_level.children) {
-      tb_obj[index] =
-        tb_item_level.children[index].title || tb_item_level.children[index];
-    }
-    tb_arr.push(tb_obj);
-  }
-  let id_arr = []
-  for (let handle_item of tb_arr) {
-    let tb_handle = {};
-    const id = handle_item['0'].innerText.replace(' ', '')
-    tb_handle['id'] = id;
-    tb_handle['name'] = handle_item['2'].replace(' ', '');
-    tb_handle['parentName'] = handle_item['3'];
-    tb_handle['overTime'] = handle_item['6'].innerHTML;
-    tb_handle['expect'] = Number(handle_item['8'].split(' ')[0]);
-    tb_handle['used'] = Number(handle_item['9'].split(' ')[0]);
-    tb_handle['surplus'] = Number(handle_item['10'].split(' ')[0]);
-    handle_arr[id] = tb_handle;
-    id_arr.push(id)
-  }
-  let page_all_status = {}
-  for (let id of id_arr) {
-    await getDetail(id).then(r => {
-      page_all_status = { ...page_all_status, ...r }
-    }).catch(err => {
-      console.log(err)
-    })
-  }
-  // const today = dayjs().format('YYYY-MM-DD')
-  const today = '2022-09-20'
+  const id_arr = getTableAllId(doc)
+  let page_data = {}
+  await pageStatus(id_arr).then(r => {
+    page_data = r
+  }).catch(err => {
+    console.error(err)
+  })
+  const today = dayjs().format('YYYY-MM-DD')
   let today_add = []
   let today_h = 0
-  Object.keys(page_all_status).map(key => {
+  Object.keys(page_data).map(key => {
     if (key.split('_')[0] === today) {
-      today_add.push(page_all_status[key])
+      today_add.push(page_data[key])
     }
   })
   let theader = document.createElement('thead')
@@ -93,7 +58,6 @@ async function initListData() {
   for (let h of today_add) {
     today_h += h.used
   }
-
 
   let _li = document.createElement('li')
   let _a = document.createElement('a')
@@ -116,15 +80,15 @@ async function initListData() {
   localStorage.setItem('log_history', JSON.stringify(log_history));
 }
 
-function getStrTag(str, id) {
+function getStrTag(str) {
   const dom = htmlToDom(str)
-  const title = dom.querySelector('h2').children[1].innerText
+  const title = dom.querySelector('h2')?.children[1].innerText
+  const id = dom.querySelector('h2')?.children[0].innerText
   const tbody = dom.querySelector('tbody')
   const thead = dom.querySelector('thead')
   let obj = {}
   for (let tr of tbody.children) {
     let _obj = {}
-    let key = ''
     for (let index_td in tr.children) {
       _obj[index_td] = tr.children[index_td].innerText
     }
@@ -150,10 +114,10 @@ function getDetail(id) {
         `http://zentao.xzxyun.com/zentao/task-recordEstimate-${id}.html?onlybody=yes`
       )
       .then((r) => {
-        resolve(getStrTag(r.data, id))
+        resolve(getStrTag(r.data))
       })
       .catch(err => {
-        console.log(err)
+        console.error(err)
         reject(err)
       });
   })
@@ -173,19 +137,21 @@ function handleTableData(data) {
   return createt_tbody
 }
 
-
-
-function getDetail() {
+function getDetailAll() {
   axios
     .get(
       `http://zentao.xzxyun.com/zentao/my-work-task-assignedTo-deadline_desc-57-2000-1.html`
     )
     .then((r) => {
-      console.log(r)
-      console.log(htmlToDom(r.data))
+      const doc = htmlToDom(r.data)
+      console.log(doc)
+      const a = pageStatus(getTableAllId(doc))
+      a.then(r => {
+        console.log(r)
+      })
     })
     .catch(err => {
-      console.log(err)
+      console.error(err)
     });
 }
 
@@ -193,4 +159,24 @@ function htmlToDom(str) {
   const parser = new DOMParser();
   const dom = parser.parseFromString(str, "text/html");
   return dom
+}
+
+function getTableAllId(document) {
+  let id_arr = [];
+  const table = document.querySelector('table#taskTable').children;
+  const tBody = table[1];
+  for (let tb_item_level of tBody.children) id_arr.push(tb_item_level.attributes.getNamedItem('data-id').value);
+  return id_arr
+}
+
+async function pageStatus(id_arr) {
+  let page_all_status = {}
+  for (let id of id_arr) {
+    await getDetail(id).then(r => {
+      page_all_status = { ...page_all_status, ...r }
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+  return page_all_status
 }
