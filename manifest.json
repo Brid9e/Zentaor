@@ -1,17 +1,17 @@
 {
-  "name": "BoomZentao",
+  "name": "Zentaor",
   "version": "0.0.1",
   "manifest_version": 3,
-  "description": "The best Zentao plugs.",
+  "description": "The best Zentao plugin.",
   "icons": {
-    "16": "icons/zentao16x16.png",
-    "32": "icons/zentao32x32.png",
-    "48": "icons/zentao48x48.png",
-    "128": "icons/zentao128x128.png"
+    "16": "icons/new/zentao16x16.png",
+    "32": "icons/new/zentao32x32.png",
+    "48": "icons/new/zentao48x48.png",
+    "128": "icons/new/zentao128x128.png"
   },
   "action": {
     "default_popup": "html/index.html",
-    "default_title": "The best Zentao plugs."
+    "default_title": "The best Zentao plugin"
   },
   "content_scripts": [
     {

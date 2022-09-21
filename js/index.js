@@ -1,32 +1,32 @@
 /*
  * @Author: Joe
  * @Date: 2022-09-20 09:05:32
- * @LastEditTime: 2022-09-20 18:53:34
+ * @LastEditTime: 2022-09-21 10:56:14
  * @LastEditors: Joe
  * @FilePath: /ZentaoTest/js/index.js
  */
 let dialog
 let d_table
+let d_form
 window.onload = () => {
   let body = document.body;
-  // let dialog_str = '<div class="pluts-dialog"> <span>这是一个弹框</span></div>'
   dialog = document.createElement('div')
   d_form = document.createElement('form')
   d_table = document.createElement('table')
   d_form.className = 'main-table table-task skip-iframe-modal'
   d_table.className = 'table has-sort-head table-fixed'
-  dialog.className = 'pluts-dialog'
-  d_table.innerHTML = '<thead><th>ID</th><th>任务名称</th><th>今日填报</th><th>预计剩余</th></thead><tbody><tr><td>1234</td><td>添加方案，应用数据没加上BR22015</td><td>4</td><td>8</td></tr></tbody>'
+  dialog.className = 'plugin-dialog'
   d_form.appendChild(d_table)
   dialog.appendChild(d_form)
   body.appendChild(dialog)
   // const parser = new DOMParser();
   // const dom = parser.parseFromString(dialog_str, "text/html");
   // console.log(dom)
-  // let plutsDialog = document.body.querySelector('.pluts-dialog')
+  // let plutsDialog = document.body.querySelector('.plugin-dialog')
   // console.log(plutsDialog)
   // appsBar.innerHTML = appsBar.innerHTML + '<span class="plugs-text">你好</span>'
-  initListData();
+  getDetail()
+  // initListData();
 };
 
 async function initListData() {
@@ -74,7 +74,8 @@ async function initListData() {
       console.log(err)
     })
   }
-  const today = dayjs().format('YYYY-MM-DD')
+  // const today = dayjs().format('YYYY-MM-DD')
+  const today = '2022-09-20'
   let today_add = []
   let today_h = 0
   Object.keys(page_all_status).map(key => {
@@ -82,6 +83,11 @@ async function initListData() {
       today_add.push(page_all_status[key])
     }
   })
+  let theader = document.createElement('thead')
+  theader.innerHTML = '<th>ID</th><th>任务名称</th><th>时间</th><th>已填</th><th>预计剩余</th><th>备注</th>'
+  d_table.appendChild(theader)
+  d_table.appendChild(handleTableData(today_add))
+
   let log_history = { ...JSON.parse(localStorage.log_history || '{}') }
   log_history[today] = today_add
   for (let h of today_add) {
@@ -110,14 +116,11 @@ async function initListData() {
   localStorage.setItem('log_history', JSON.stringify(log_history));
 }
 
-
-
-
 function getStrTag(str, id) {
-  const parser = new DOMParser();
-  const dom = parser.parseFromString(str, "text/html");
+  const dom = htmlToDom(str)
   const title = dom.querySelector('h2').children[1].innerText
   const tbody = dom.querySelector('tbody')
+  const thead = dom.querySelector('thead')
   let obj = {}
   for (let tr of tbody.children) {
     let _obj = {}
@@ -128,11 +131,10 @@ function getStrTag(str, id) {
     let __obj = {}
     __obj['id'] = id
     __obj['title'] = title
-    __obj['used'] = Number(_obj['2']?.split(' ')[0])
     __obj['time'] = _obj['1']
+    __obj['used'] = Number(_obj['2']?.split(' ')[0])
     __obj['surplus'] = Number(_obj['3']?.split(' ')[0])
     __obj['desc'] = _obj['4']
-
     obj[`${_obj[1]}_${Math.random()}`] = __obj
   }
   Object.keys(obj).map(key => {
@@ -157,3 +159,38 @@ function getDetail(id) {
   })
 }
 
+function handleTableData(data) {
+  let createt_tbody = document.createElement('tbody')
+  for (let td_item of data) {
+    let tr = document.createElement('tr')
+    Object.keys(td_item).map(key => {
+      let td = document.createElement('td')
+      td.innerText = td_item[key]
+      tr.appendChild(td)
+    })
+    createt_tbody.appendChild(tr)
+  }
+  return createt_tbody
+}
+
+
+
+function getDetail() {
+  axios
+    .get(
+      `http://zentao.xzxyun.com/zentao/my-work-task-assignedTo-deadline_desc-57-2000-1.html`
+    )
+    .then((r) => {
+      console.log(r)
+      console.log(htmlToDom(r.data))
+    })
+    .catch(err => {
+      console.log(err)
+    });
+}
+
+function htmlToDom(str) {
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(str, "text/html");
+  return dom
+}
