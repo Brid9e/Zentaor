@@ -1,17 +1,31 @@
 {
   "name": "Zentaor",
+  "description": "The best Zentao plugin.",
   "version": "0.0.1",
   "manifest_version": 3,
-  "description": "The best Zentao plugin.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
   "icons": {
-    "16": "icons/new/zentao16x16.png",
-    "32": "icons/new/zentao32x32.png",
-    "48": "icons/new/zentao48x48.png",
-    "128": "icons/new/zentao128x128.png"
+    "16": "images/new/zentao16x16.png",
+    "32": "images/new/zentao32x32.png",
+    "48": "images/new/zentao48x48.png",
+    "128": "images/new/zentao128x128.png"
   },
   "action": {
-    "default_popup": "html/index.html",
-    "default_title": "The best Zentao plugin"
+    "default_popup": "popup.html",
+    "default_title": "The best Zentao plugin",
+    "default_icon": {
+      "16": "images/new/zentao16x16.png",
+      "32": "images/new/zentao32x32.png",
+      "48": "images/new/zentao48x48.png",
+      "128": "images/new/zentao128x128.png"
+    }
   },
   "content_scripts": [
     {
@@ -27,5 +41,6 @@
         "css/item.css"
       ]
     }
-  ]
+  ],
+  "options_page": "options.html"
 }
