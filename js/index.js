@@ -13,6 +13,9 @@
  * @description: 初始化一些全局使用的数据
  *
  */
+
+
+
 let dialog
 let d_table
 let d_form
@@ -21,11 +24,15 @@ let body
 let doc
 let nav
 let today_h = 0
+let today
 window.onload = () => {
-  initDom()
-  initLoading()
-  initDialog()
-  initListData();
+  window.initIndex = (params) => {
+    today = params.time || dayjs().format('YYYY-MM-DD')
+    initDom()
+    initLoading()
+    initDialog()
+    initListData();
+  }
 };
 
 function initDom() {
@@ -61,7 +68,6 @@ function initLoading() {
 
 
 async function initListData() {
-
   const id_arr = getTableAllId(doc)
   let page_data = {}
   await getPageAllDetails(id_arr).then(r => {
@@ -69,21 +75,25 @@ async function initListData() {
   }).catch(err => {
     console.error(err)
   })
-  const today = dayjs().format('YYYY-MM-DD')
   let today_add = []
+  let _history = {}
   Object.keys(page_data).map(key => {
     if (key.split('_')[0] === today) {
       today_add.push(page_data[key])
       today_h += page_data[key].used
     }
   })
+
+  _history[today] = today_add
+
   let theader = document.createElement('thead')
   theader.innerHTML = '<th style="width:80px;">ID</th><th>任务名称</th><th style="width:100px;">时间</th><th style="width:80px;">已填</th><th style="width:80px;">预计剩余</th><th>备注</th>'
   d_table.appendChild(theader)
   d_table.appendChild(handleTableData(today_add))
+
   loadTodyDataModel()
   eventListener()
-  localStorage.setItem('log_history', JSON.stringify(today_add));
+  saveToStorage(_history, today_add)
 }
 
 
@@ -279,28 +289,19 @@ function loadTodyDataModel() {
   nav.appendChild(_li)
 }
 
-
-
-
-
-//监听background的消息
-chrome.runtime.onMessage.addListener(function (senderRequest, sender, sendResponse) {//接收到bg
-  console.log('demo已运行');
-  var LocalDB = senderRequest.LocalDB;
-  console.log(LocalDB);
-  if (!!LocalDB) {
-    console.log(LocalDB.Content);
-    switch (LocalDB.Content) {
-      case 'TEST':
-        console.log('收到消息了');
-        break;
-      case 'content':
-        console.log('执行操作');
-        del()
-        break;
-    }
-  } else {
-    console.log(senderRequest)
+/**
+ *
+ * @Date: 2022-09-23 00:15:59 
+ * @Author: Joe 
+ * @Description: 将当日的填报记录存入storage
+ *
+ */
+function saveToStorage(_history, today_add) {
+  if (!localStorage.log_history) {
+    localStorage.setItem('log_history', JSON.stringify(_history));
   }
-  sendResponse('已接收')
-});
+  let _d = {}
+  _d = JSON.parse(localStorage.log_history)
+  _d[today] = today_add
+  localStorage.log_history = JSON.stringify(_d)
+}

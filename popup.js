@@ -1,47 +1,38 @@
-// if (sendMessageId) {
-//   pushMsgToBg(sendMessageId)
-//   // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-//   //   chrome.tabs.sendMessage(
-//   //     tabs[0].id,
-//   //     {
-//   //       url: chrome.runtime.getURL("icons/zentao16x16.png"),
-//   //       imageDivId: `${guidGenerator()}`,
-//   //       tabId: tabs[0].id
-//   //     },
-//   //     function (response) {
-//   //       window.close();
-//   //     }
-//   //   );
-//   //   function guidGenerator() {
-//   //     const S4 = function () {
-//   //       return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-//   //     };
-//   //     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-//   //   }
-//   // });
-// }
-// function pushMsgToBg() {
-const sendMessageId = document.getElementById("sendmessageid");
-//初始化bgCommunicationPort
-window.bgCommunicationPort = chrome.runtime.connect();
-//给bg发消息
-sendMessageId.addEventListener("click", async () => {
-  let input_value = $('#InputContent').val()
-  alert(input_value)
-  bgCommunicationPort.postMessage({//发送到bg,键值可以自由设置
-    Content: 'content',//说明
-    Input_value: input_value,//数据
-    step: 0//步骤
+// Initialize butotn with users's prefered color
+let changeColor = document.getElementById("changeColor");
+let changeValue = document.getElementById("changeValue");
+
+chrome.storage.sync.get("msg", ({ msg }) => {
+  // changeColor.style.backgroundColor = color;
+  console.log(msg)
+});
+
+// When the button is clicked, inject setPageBackgroundColor into current page
+changeColor.addEventListener("click", async () => {
+  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    function: setPageBackgroundColor,
   });
+});
+
+
+changeValue.addEventListener("input", (e) => {
+  console.log(e.target.value)
 })
 
-  // //打开popup时触发，读取之前存储的参数
-  // $(document).ready(function () {
-  //   bgCommunicationPort.postMessage({ fromPopup: 'getDB' });//向background发送消息
-  //   bgCommunicationPort.onMessage.addListener(function (receivedPortMsg) {//监听background
-  //     console.log(receivedPortMsg);//这是background发来的内容
-  //     if (receivedPortMsg && receivedPortMsg.input_value) {
-  //       $('InputContent').val(receivedPortMsg.input_value)
-  //     }
-  //   });
-  // });
+// The body of this function will be execuetd as a content script inside the
+// current page
+function setPageBackgroundColor() {
+  chrome.storage.sync.get("msg", ({ msg }) => {
+    // document.body.style.backgroundColor = color;
+    // console.log(msg)
+    let params = {
+      time: ''
+    }
+
+    window.initIndex(params)
+
+    // window.init()
+  });
+}
