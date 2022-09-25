@@ -13,9 +13,6 @@
  * @description: 初始化一些全局使用的数据
  *
  */
-
-
-
 let dialog
 let d_table
 let d_form
@@ -25,20 +22,30 @@ let doc
 let nav
 let today_h = 0
 let today
+let allPage = 0
+let allItem = 0
+let pageSize = 0
+let _history = {}
+let isChange = false
 window.onload = () => {
-  window.initIndex = (params) => {
-    today = params.time || dayjs().format('YYYY-MM-DD')
-    initDom()
-    initLoading()
-    initDialog()
-    initListData();
-  }
+  // window.initIndex = (params) => {
+  // today = params.time || dayjs().format('YYYY-MM-DD')
+  today = dayjs().format('YYYY-MM-DD')
+  initDom()
+  initLoading()
+  initDialog()
+  initListData();
+  // }
 };
 
-function initDom() {
+async function initDom() {
   iframe = document.querySelector('iframe');
   doc = iframe.contentWindow.document
   nav = doc.querySelector('#subNavbar').children[0]
+  allPage = doc.querySelector('.pager').children[4].children[0].children[1].innerText
+  allItem = doc.querySelector('.pager').children[0].children[0].children[0].innerText
+  pageSize = doc.querySelector('.pager').children[1].children[0].children[0].children[0].innerText
+
 }
 
 function initDialog() {
@@ -66,34 +73,40 @@ function initLoading() {
   nav.appendChild(_li)
 }
 
-
+/**
+ *
+ * @Date: 2022-09-25 21:14:08 
+ * @author: Joe 
+ * @description: 初始化数据，它会获取所有分页的数据，并进一步处理
+ *
+ */
 async function initListData() {
-  const id_arr = getTableAllId(doc)
-  let page_data = {}
-  await getPageAllDetails(id_arr).then(r => {
-    page_data = r
-  }).catch(err => {
-    console.error(err)
-  })
+  let id_arr = []
   let today_add = []
-  let _history = {}
-  Object.keys(page_data).map(key => {
-    if (key.split('_')[0] === today) {
-      today_add.push(page_data[key])
-      today_h += page_data[key].used
+  if (!isChange && localStorage.log_history) {
+    _history = JSON.parse(localStorage.log_history)
+  } else {
+    for (let i = 1; i <= allPage; i++) {
+      const id_item = await getDetailAll(i)
+      id_arr = [...id_arr, ...id_item]
     }
-  })
-
-  _history[today] = today_add
-
-  let theader = document.createElement('thead')
-  theader.innerHTML = '<th style="width:80px;">ID</th><th>任务名称</th><th style="width:100px;">时间</th><th style="width:80px;">已填</th><th style="width:80px;">预计剩余</th><th>备注</th>'
-  d_table.appendChild(theader)
-  d_table.appendChild(handleTableData(today_add))
-
+    let page_data = {}
+    await getPageAllDetails(id_arr).then(r => {
+      page_data = r
+    }).catch(err => {
+      console.error(err)
+    })
+    Object.keys(page_data).map(key => {
+      _history[key.split('_')[0]] ? _history[key.split('_')[0]].push(page_data[key]) : _history[key.split('_')[0]] = [page_data[key]]
+    })
+  }
+  if (_history[today]) {
+    today_add = _history[today]
+  }
+  dataToTodayTable(today_add)
   loadTodyDataModel()
   eventListener()
-  saveToStorage(_history, today_add)
+  saveToToday(_history)
 }
 
 
@@ -180,24 +193,25 @@ function handleTableData(data) {
  *
  * @date: 2022-09-22 21:48:15 
  * @author: Joe 
- * @description: 获取创建以来所有数据（会调取大量接口，你需要一个强悍的公司服务器）
+ * @description: 获取分页下的某一页所有数据，用于总页数循环获取所有数据 resolve一个值为id的LIST，如：['1233', '1234', '1526', ...]
  *
  */
-function getDetailAll() {
-  axios
-    .get(
-      `http://zentao.xzxyun.com/zentao/my-work-task-assignedTo-deadline_desc-57-2000-1.html`
-    )
-    .then((r) => {
-      const doc = htmlToDom(r.data)
-      const a = getPageAllDetails(getTableAllId(doc))
-      a.then(r => {
-        console.log(r)
+async function getDetailAll(_page) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        `http://zentao.xzxyun.com/zentao/my-work-task-assignedTo-deadline_desc-${allItem}-${pageSize}-${_page}.html`
+      )
+      .then((r) => {
+        const doc = htmlToDom(r.data)
+        const _idList = getTableAllId(doc)
+        resolve(_idList)
       })
-    })
-    .catch(err => {
-      console.error(err)
-    });
+      .catch(err => {
+        reject(err)
+      });
+  })
+
 }
 
 
@@ -233,8 +247,8 @@ function getTableAllId(document) {
 /**
  *
  * @Date: 2022-09-22 21:52:10 
- * @Author: Joe 
- * @Description: 获取本页所有任务详情的数据
+ * @author: Joe 
+ * @description: 获取本页所有任务详情的数据
  *
  */
 async function getPageAllDetails(id_arr) {
@@ -245,14 +259,15 @@ async function getPageAllDetails(id_arr) {
     }).catch(err => {
     })
   }
+  // console.log(page_all_status)
   return page_all_status
 }
 
 /**
  *
  * @Date: 2022-09-22 21:51:56 
- * @Author: Joe 
- * @Description: 监听事件，控制一些dom的动作
+ * @author: Joe 
+ * @description: 监听事件，控制一些dom的动作
  *
  */
 function eventListener() {
@@ -292,16 +307,37 @@ function loadTodyDataModel() {
 /**
  *
  * @Date: 2022-09-23 00:15:59 
- * @Author: Joe 
- * @Description: 将当日的填报记录存入storage
+ * @author: Joe 
+ * @description: 将当日的填报记录存入storage
  *
  */
-function saveToStorage(_history, today_add) {
+function saveToToday(_history) {
   if (!localStorage.log_history) {
     localStorage.setItem('log_history', JSON.stringify(_history));
   }
-  let _d = {}
-  _d = JSON.parse(localStorage.log_history)
-  _d[today] = today_add
-  localStorage.log_history = JSON.stringify(_d)
+  // let _d = {}
+  // _d = JSON.parse(localStorage.log_history)
+  // _d[today] ?  _d[today].push(today_add) : _d[today] = today_add
+  // localStorage.log_history = JSON.stringify(_d)
+}
+
+/**
+ *
+ * @Date: 2022-09-25 20:51:24 
+ * @author: Joe 
+ * @description: 数据插入表格
+ *
+ */
+function dataToTodayTable(today_add) {
+  if (!today_add || today_add.length == 0) {
+    let _empty = document.createElement('div')
+    _empty.className = 'plugin-empty'
+    _empty.innerText = '今日还未填写'
+    d_table.appendChild(_empty)
+    return
+  }
+  let theader = document.createElement('thead')
+  theader.innerHTML = '<th style="width:80px;">ID</th><th>任务名称</th><th style="width:100px;">时间</th><th style="width:80px;">已填</th><th style="width:80px;">预计剩余</th><th>备注</th>'
+  d_table.appendChild(theader)
+  d_table.appendChild(handleTableData(today_add))
 }

@@ -1,6 +1,5 @@
 // Initialize butotn with users's prefered color
 let changeColor = document.getElementById("changeColor");
-let changeValue = document.getElementById("changeValue");
 
 chrome.storage.sync.get("msg", ({ msg }) => {
   // changeColor.style.backgroundColor = color;
@@ -16,9 +15,8 @@ changeColor.addEventListener("click", async () => {
   });
 });
 
-
-changeValue.addEventListener("input", (e) => {
-  console.log(e.target.value)
+window.addEventListener('beforeunload', async (e) => {
+  console.log(e)
 })
 
 // The body of this function will be execuetd as a content script inside the
@@ -27,12 +25,7 @@ function setPageBackgroundColor() {
   chrome.storage.sync.get("msg", ({ msg }) => {
     // document.body.style.backgroundColor = color;
     // console.log(msg)
-    let params = {
-      time: ''
-    }
-
-    window.initIndex(params)
-
+    console.log(window.localStorage)
     // window.init()
   });
 }
