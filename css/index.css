@@ -43,7 +43,7 @@ html, body {
 
 #Popup {
   width: 420px;
-  height: 480px;
+  height: 420px;
 }
 
 .logo {
@@ -113,7 +113,7 @@ html, body {
   color: white;
   padding: 3px;
   border-radius: 4px;
-  margin-right: 10px;
+  margin-right: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,5 +126,14 @@ html, body {
 }
 .iconfont {
   pointer-events: none;
+}
+.zentor-info{
+  height: 40px;
+  background-color: var(--color-primary);
+  color: var(--color-light);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
 }
 
