@@ -13,6 +13,17 @@
  * @description: 初始化一些全局使用的数据
  *
  */
+
+// chrome.runtime.onInstalled.addListener(() => {
+
+//   // console.log(window.localStorage)
+
+//   // console.log('Default background color set to %cgreen', `color: ${color}`);
+// });
+// window.addEventListener('click', () => {
+//   console.log(window.location.href)
+// })
+console.log('is loading...')
 let dialog
 let d_table
 let d_form
@@ -28,15 +39,27 @@ let pageSize = 0
 let _history = {}
 let isChange = false
 window.onload = () => {
-  // window.initIndex = (params) => {
-  // today = params.time || dayjs().format('YYYY-MM-DD')
-  today = dayjs().format('YYYY-MM-DD')
-  initDom()
-  initLoading()
-  initDialog()
-  initListData();
-  // }
+  chrome.syncDatas = (type) => {
+    const _href = window.location.href
+    if (_href !== 'http://zentao.xzxyun.com/zentao/my-work-task.html') {
+      if (!type) return
+      alert('您只能在任务界面同步数据！')
+      return
+    }
+    today_h = 0
+    _history = {}
+    if (nav) {
+      nav.removeChild(nav.lastElementChild)
+    }
+    today = dayjs().format('YYYY-MM-DD')
+    initDom()
+    initLoading()
+    initDialog()
+    initListData()
+  }
+  chrome.syncDatas()
 };
+
 
 async function initDom() {
   iframe = document.querySelector('iframe');
@@ -45,7 +68,11 @@ async function initDom() {
   allPage = doc.querySelector('.pager').children[4].children[0].children[1].innerText
   allItem = doc.querySelector('.pager').children[0].children[0].children[0].innerText
   pageSize = doc.querySelector('.pager').children[1].children[0].children[0].children[0].innerText
-
+  iframe.addEventListener('load', async () => {
+    const _href = window.location.href
+    if (_href !== 'http://zentao.xzxyun.com/zentao/my-work-task.html') return
+    chrome.syncDatas(false)
+  })
 }
 
 function initDialog() {
@@ -61,7 +88,7 @@ function initDialog() {
   body.appendChild(dialog)
 }
 
-function initLoading() {
+async function initLoading() {
   // 
   let _li = document.createElement('li')
   let _a = document.createElement('a')
@@ -71,6 +98,7 @@ function initLoading() {
   _li.appendChild(_a)
   // nav.innerHTML = nav.innerHTML + `<li class="today-add" ></li>`
   nav.appendChild(_li)
+  console.log(nav)
 }
 
 /**
@@ -83,30 +111,27 @@ function initLoading() {
 async function initListData() {
   let id_arr = []
   let today_add = []
-  if (!isChange && localStorage.log_history) {
-    _history = JSON.parse(localStorage.log_history)
-  } else {
-    for (let i = 1; i <= allPage; i++) {
-      const id_item = await getDetailAll(i)
-      id_arr = [...id_arr, ...id_item]
-    }
-    let page_data = {}
-    await getPageAllDetails(id_arr).then(r => {
-      page_data = r
-    }).catch(err => {
-      console.error(err)
-    })
-    Object.keys(page_data).map(key => {
-      _history[key.split('_')[0]] ? _history[key.split('_')[0]].push(page_data[key]) : _history[key.split('_')[0]] = [page_data[key]]
-    })
+  for (let i = 1; i <= allPage; i++) {
+    const id_item = await getDetailAll(i)
+    id_arr = [...id_arr, ...id_item]
   }
+  let page_data = {}
+  await getPageAllDetails(id_arr).then(r => {
+    page_data = r
+  }).catch(err => {
+    console.error(err)
+  })
+  Object.keys(page_data).map(key => {
+    _history[key.split('_')[0]] ? _history[key.split('_')[0]].push(page_data[key]) : _history[key.split('_')[0]] = [page_data[key]]
+  })
   if (_history[today]) {
     today_add = _history[today]
   }
   dataToTodayTable(today_add)
   loadTodyDataModel()
   eventListener()
-  saveToToday(_history)
+  saveToLocal(_history)
+  saveMonthLocal(_history)
 }
 
 
@@ -311,14 +336,41 @@ function loadTodyDataModel() {
  * @description: 将当日的填报记录存入storage
  *
  */
-function saveToToday(_history) {
+function saveToLocal(_history) {
   if (!localStorage.log_history) {
     localStorage.setItem('log_history', JSON.stringify(_history));
+  } else {
+    localStorage['log_history'] = JSON.stringify(_history)
   }
-  // let _d = {}
-  // _d = JSON.parse(localStorage.log_history)
-  // _d[today] ?  _d[today].push(today_add) : _d[today] = today_add
-  // localStorage.log_history = JSON.stringify(_d)
+}
+
+
+/**
+ *
+ * @Date: 2022-10-14 23:09:36 
+ * @Author: Joe 
+ * @Description: 计算每月总工时，并存入本地缓存
+ *
+ */
+function saveMonthLocal(_history) {
+  const _obj = {}
+  const _obj_day = {}
+  Object.keys(_history).map(key => {
+    let time_add = 0
+    let time_add_day = 0
+    for (let val of _history[key]) {
+      time_add += val.used
+      time_add_day += val.used
+    }
+    !_obj_day[key] ? _obj_day[key] = time_add_day : _obj_day[key] = _obj_day[key] + time_add_day
+    const month_keys = key.split('-')
+    const month_item = month_keys[0] + '-' + month_keys[1]
+    !_obj[month_item] ? _obj[month_item] = time_add : _obj[month_item] = _obj[month_item] + time_add
+  })
+  const _finalData = { month_data: _obj, day_data: _obj_day }
+  localStorage.setItem('log_month_history', JSON.stringify(_finalData))
+
+  // chrome.runtime.sendMessage(_finalData, (res) => { console.log(res) });
 }
 
 /**

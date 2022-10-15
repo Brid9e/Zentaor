@@ -7,7 +7,7 @@
 }
 
 #Popup {
-  width: 150px;
+  width: 300px;
   height: 300px;
   background-color: #212121;
   display: flex;
@@ -50,12 +50,11 @@
 
 @keyframes fade {
   0% {
-    filter: blur(10px) hue-rotate(0deg);
+    filter: blur(10px) hue-rotate(0deg) ;
   }
   100% {
     filter: blur(14px) hue-rotate(15deg);
   }
-
 }
 
 .edition {
@@ -66,7 +65,6 @@
   margin-top: 1.25rem;
   z-index: 2;
 }
-
 /* .logo-box:hover .logo-bg{
   filter: blur(20px);
 } */

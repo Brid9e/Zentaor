@@ -3,13 +3,17 @@
   "description": "The best Zentao plugin.",
   "version": "0.0.1",
   "manifest_version": 3,
-  "background": {
-    "service_worker": "background.js"
-  },
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "declarativeContent"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "*://*/*"
   ],
   "icons": {
     "16": "images/new/zentao16x16.png",
@@ -27,20 +31,20 @@
       "128": "images/new/zentao128x128.png"
     }
   },
+
   "content_scripts": [
     {
-      "matches": [
-        "http://zentao.xzxyun.com/zentao/*"
-      ],
       "js": [
         "js/dayjs.min.js",
         "js/axios.min.js",
         "js/index.js"
       ],
+      "matches": [
+        "http://zentao.xzxyun.com/zentao/*"
+      ],
       "css": [
         "css/item.css"
       ]
     }
-  ],
-  "options_page": "options.html"
+  ]
 }
