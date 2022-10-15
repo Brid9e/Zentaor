@@ -1,37 +1,23 @@
-
-// chrome.runtime.onInstalled.addListener(() => {
-//   // const msg = {
-//   //   code: 200,
-//   //   data: [{ test: 2131231231 }]
-//   // }
-//   // console.log(window.localStorage)
-
-//   // console.log('Default background color set to %cgreen', `color: ${color}`);
-// });
-
-
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.get("msg", ({ msg }) => {
     // syncData.style.backgroundColor = color;
-    console.log(msg)
   });
-
   // console.log('Default background color set to %cgreen', `color: ${color}`);
 });
+
+let data
 // 监听来自content-script的消息
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-//   console.log('收到来自content-script的消息：');
-//   console.log(request, sender, sendResponse);
-//   data = request
-//   sendResponse('我是后台，我已收到你的消息：' + JSON.stringify(request));
-//   chrome.storage.sync.set({ request });
-// });
-
-// const getData = () => {
-//   return data
-// }
-
-
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  // console.log('收到来自content-script的消息：');
+  // console.log(request, sender, sendResponse)
+  if (request.from === 'content') {
+    sendResponse(request);
+    data = request.data
+  }
+  if (request.from === 'popup') {
+    sendResponse(data || '还没获取到数据');
+  }
+});
 
 // const tabStorage = {};
 

@@ -9,38 +9,35 @@
     "scripting",
     "declarativeContent"
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "host_permissions": [
     "*://*/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "icons": {
-    "16": "images/new/zentao16x16.png",
-    "32": "images/new/zentao32x32.png",
-    "48": "images/new/zentao48x48.png",
-    "128": "images/new/zentao128x128.png"
+    "16": "images/Zentor16x16.png",
+    "32": "images/Zentor32x32.png",
+    "48": "images/Zentor48x48.png",
+    "128": "images/Zentor128x128.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_title": "The best Zentao plugin",
     "default_icon": {
-      "16": "images/new/zentao16x16.png",
-      "32": "images/new/zentao32x32.png",
-      "48": "images/new/zentao48x48.png",
-      "128": "images/new/zentao128x128.png"
+      "16": "images/Zentor16x16.png",
+      "32": "images/Zentor32x32.png",
+      "48": "images/Zentor48x48.png",
+      "128": "images/Zentor128x128.png"
     }
   },
-
   "content_scripts": [
     {
+      "matches": ["<all_urls>"],
       "js": [
         "js/dayjs.min.js",
         "js/axios.min.js",
         "js/index.js"
-      ],
-      "matches": [
-        "http://zentao.xzxyun.com/zentao/*"
       ],
       "css": [
         "css/item.css"

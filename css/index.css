@@ -1,51 +1,71 @@
+
 * {
   padding: 0;
   margin: 0;
 }
-#changeColor, #changeValue{
-  z-index: 999;
+
+html, body {
+  margin: 0;
+  background-color: var(--color-bg);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@font-face {
+  font-family: 'Zentor';
+  src: url('/font/TrickShot.ttf');
+}
+
+@font-face {
+  font-family: 'Z';
+  src: url('/font/Hyrbo-Bold.otf');
+}
+
+/*滚动条整体粗细样式*/
+::-webkit-scrollbar {
+  /*高宽分别对应横竖滚动条的尺寸*/
+  width: 8px;
+  height: 8px;
+}
+
+/*滚动条里面小方块*/
+::-webkit-scrollbar-thumb {
+  /* 颜色 */
+  /* background:#b6b6b6!important; */
+  /* 线性渐变背景 */
+  background-color: var(--color-primary);
+}
+
+/*滚动条轨道*/
+::-webkit-scrollbar-track {
+  background: var(--color-white) !important;
 }
 
 #Popup {
-  width: 300px;
-  height: 300px;
-  background-color: #212121;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 2rem;
-  overflow: hidden;
-}
-
-.logo-box {
-  width: 5rem;
-  height: 5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.logo-box .logo,
-.logo-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transition: all .3s ease;
+  width: 420px;
+  height: 480px;
 }
 
 .logo {
-  z-index: 2;
+  color: white;
+  font-family: 'Zentor';
+  display: flex;
+  align-items: center;
+  transform: translateX(12px);
 }
-
-.logo-bg {
-  z-index: 1;
-  filter: blur(3px);
-  transform: scale(5) translateY(20px);
-  position: absolute;
-  opacity: 0.6;
-  animation: fade 5s infinite;
-  animation-direction: alternate;
+.Z-logo{
+  font-family: 'Z';
+  font-size: 40px!important;
+  margin-right: 10px;
+  transform: rotate(-45deg) scaleX(1.3);
+}
+.head{
+  height: 72px;
+  background-color: var(--color-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
 }
 
 @keyframes fade {
@@ -59,7 +79,7 @@
 
 .edition {
   /* background-color: red; */
-  color: #ffffff;
+  /* color: #ffffff; */
   font-size: 16px;
   font-weight: 400;
   margin-top: 1.25rem;
@@ -68,3 +88,43 @@
 /* .logo-box:hover .logo-bg{
   filter: blur(20px);
 } */
+
+.custom-btn{
+  width: auto!important;
+  height: 30px!important;
+  display: flex!important;
+  justify-content: center;
+  align-items: center;
+}
+.calendar-box{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow-y: auto;
+}
+
+.handle{
+  display: flex;
+}
+.handle-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  color: white;
+  padding: 3px;
+  border-radius: 4px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.handle-icon:last-child{
+  margin-right: 0;
+}
+.handle-icon:hover{
+  background-color: var(--color-sub);
+}
+.iconfont {
+  pointer-events: none;
+}
+

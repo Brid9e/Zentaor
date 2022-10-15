@@ -1,0 +1,100 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1441765",
+      "name": "arrow-left",
+      "font_class": "arrow-left",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "1441766",
+      "name": "arrow-left-bold",
+      "font_class": "arrow-left-bold",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "1441773",
+      "name": "arrow-right",
+      "font_class": "arrow-right",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "1443405",
+      "name": "arrow-right-bold",
+      "font_class": "arrow-right-bold",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "1444220",
+      "name": "chevron-double-left",
+      "font_class": "chevron-double-left",
+      "unicode": "e6a8",
+      "unicode_decimal": 59048
+    },
+    {
+      "icon_id": "1444221",
+      "name": "chevron-double-right",
+      "font_class": "chevron-double-right",
+      "unicode": "e6a9",
+      "unicode_decimal": 59049
+    },
+    {
+      "icon_id": "1444224",
+      "name": "chevron-left",
+      "font_class": "chevron-left",
+      "unicode": "e6aa",
+      "unicode_decimal": 59050
+    },
+    {
+      "icon_id": "1444225",
+      "name": "chevron-right",
+      "font_class": "chevron-right",
+      "unicode": "e6ab",
+      "unicode_decimal": 59051
+    },
+    {
+      "icon_id": "1445388",
+      "name": "sync",
+      "font_class": "sync",
+      "unicode": "e8cd",
+      "unicode_decimal": 59597
+    },
+    {
+      "icon_id": "1445401",
+      "name": "sync-off",
+      "font_class": "sync-off",
+      "unicode": "e8d3",
+      "unicode_decimal": 59603
+    },
+    {
+      "icon_id": "1445433",
+      "name": "theme-light-dark",
+      "font_class": "theme-light-dark",
+      "unicode": "e8e3",
+      "unicode_decimal": 59619
+    },
+    {
+      "icon_id": "1445454",
+      "name": "toggle-switch",
+      "font_class": "toggle-switch",
+      "unicode": "e8ee",
+      "unicode_decimal": 59630
+    },
+    {
+      "icon_id": "1445456",
+      "name": "toggle-switch-off",
+      "font_class": "toggle-switch-off",
+      "unicode": "e8ef",
+      "unicode_decimal": 59631
+    }
+  ]
+}

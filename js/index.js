@@ -23,7 +23,6 @@
 // window.addEventListener('click', () => {
 //   console.log(window.location.href)
 // })
-console.log('is loading...')
 let dialog
 let d_table
 let d_form
@@ -48,6 +47,7 @@ window.onload = () => {
     }
     today_h = 0
     _history = {}
+    dialog = null
     if (nav) {
       nav.removeChild(nav.lastElementChild)
     }
@@ -55,7 +55,7 @@ window.onload = () => {
     initDom()
     initLoading()
     initDialog()
-    initListData()
+    initListData(type)
   }
   chrome.syncDatas()
 };
@@ -105,25 +105,50 @@ async function initLoading() {
  *
  * @Date: 2022-09-25 21:14:08 
  * @author: Joe 
- * @description: 初始化数据，它会获取所有分页的数据，并进一步处理
+ * @description: 初始化数据，
+ */
+async function initListData(type = false) {
+
+  if (!isChange && localStorage.log_history && !type) {
+    try {
+      _history = JSON.parse(localStorage.log_history)
+      getAllData(false)
+    } catch {
+      getAllData()
+    }
+  } else {
+    getAllData()
+  }
+
+}
+
+/**
+ *
+ * @Date: 2022-10-15 14:18:28 
+ * @Author: Joe 
+ * @Description: 获取所有分页的数据，并进一步处理
+ *
  *
  */
-async function initListData() {
+async function getAllData(needReload = true) {
   let id_arr = []
   let today_add = []
-  for (let i = 1; i <= allPage; i++) {
-    const id_item = await getDetailAll(i)
-    id_arr = [...id_arr, ...id_item]
+  if (needReload) {
+    console.log(needReload)
+    for (let i = 1; i <= allPage; i++) {
+      const id_item = await getDetailAll(i)
+      id_arr = [...id_arr, ...id_item]
+    }
+    let page_data = {}
+    await getPageAllDetails(id_arr).then(r => {
+      page_data = r
+    }).catch(err => {
+      console.error(err)
+    })
+    Object.keys(page_data).map(key => {
+      _history[key.split('_')[0]] ? _history[key.split('_')[0]].push(page_data[key]) : _history[key.split('_')[0]] = [page_data[key]]
+    })
   }
-  let page_data = {}
-  await getPageAllDetails(id_arr).then(r => {
-    page_data = r
-  }).catch(err => {
-    console.error(err)
-  })
-  Object.keys(page_data).map(key => {
-    _history[key.split('_')[0]] ? _history[key.split('_')[0]].push(page_data[key]) : _history[key.split('_')[0]] = [page_data[key]]
-  })
   if (_history[today]) {
     today_add = _history[today]
   }
@@ -367,10 +392,9 @@ function saveMonthLocal(_history) {
     const month_item = month_keys[0] + '-' + month_keys[1]
     !_obj[month_item] ? _obj[month_item] = time_add : _obj[month_item] = _obj[month_item] + time_add
   })
-  const _finalData = { month_data: _obj, day_data: _obj_day }
+  const _finalData = { month_data: _obj, day_data: _obj_day, all_data: _history }
   localStorage.setItem('log_month_history', JSON.stringify(_finalData))
-
-  // chrome.runtime.sendMessage(_finalData, (res) => { console.log(res) });
+  chrome.runtime.sendMessage({ from: 'content', data: _finalData }, () => { });
 }
 
 /**
