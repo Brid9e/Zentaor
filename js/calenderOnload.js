@@ -1,17 +1,26 @@
 let detailPopup
 let d_table
 let closeBtn
-let calenderBox = document.querySelector('.calendar-box')
+let isEmpty
 let year = new Date().getFullYear()
 let month = new Date().getMonth() + 1
 
+const calenderBox = document.querySelector('.calendar-box')
 const tableBox = document.getElementById('table-box')
 const addMonthDom = document.getElementById('add-month')
 const subMonthDom = document.getElementById('sub-month')
 const addYearDom = document.getElementById('add-year')
 const subYearDom = document.getElementById('sub-year')
 
-tableBox.innerHTML = calendar(year, month)
+if (data) {
+  if(isEmpty) isEmpty = null
+  tableBox.innerHTML = calendar(year, month)
+} else {
+  isEmpty = document.createElement('div')
+  isEmpty.className = 'table-is-empty'
+  isEmpty.innerHTML = '<span class="iconfont icon-sync-off"></span><span class="msg">首次安装需要同步数据</span>'
+  tableBox.appendChild(isEmpty)
+}
 
 function addMonth() {
   month += 1
@@ -61,7 +70,7 @@ function getYmd(e) {
     d_table.style.tableLayout = 'fixed'
     d_table.className = 'detail-popup-table'
     detailPopup.appendChild(d_table)
-    dataToTodayTable(data.all_data[e.target.attributes['ymd'].nodeValue])
+    dataToTodayTable(data.all_data[ e.target.attributes[ 'ymd' ].nodeValue ])
     // console.log(data.all_data[e.target.attributes['ymd'].nodeValue])
     // alert(JSON.stringify(data.all_data[e.target.attributes['ymd'].nodeValue]))
     closeBtn.addEventListener('click', clearTable, true)
@@ -86,7 +95,7 @@ function handleTableData(data) {
       let td = document.createElement('td')
       td.style.overflow = 'hidden'
       td.style.textOverflow = 'ellipsis'
-      td.innerText = td_item[key]
+      td.innerText = td_item[ key ]
       tr.appendChild(td)
     })
     createt_tbody.appendChild(tr)

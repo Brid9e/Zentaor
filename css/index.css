@@ -136,4 +136,17 @@ html, body {
   align-items: center;
   justify-content: right;
 }
+.table-is-empty{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: var(--color-font);
+  opacity: 0.7;
+}
+.table-is-empty .iconfont {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
 
