@@ -104,6 +104,9 @@ tr.cal-week td{
 td.cal-day.is-today {
   color: var(--color-high-light);
 }
+td.cal-day.is-today span {
+  color: var(--color-hover-1);
+}
 
 .detail-popup{
   background-color: var(--color-bg);
