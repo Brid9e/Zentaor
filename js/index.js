@@ -404,6 +404,8 @@ function saveMonthLocal(_history) {
   const _finalData = { month_data: _obj, day_data: _obj_day, all_data: _history }
   localStorage.setItem('log_history', JSON.stringify(_finalData))
   isLoading = false
+  data = _finalData
+  tableBox.innerHTML = calendar(year, month)
   syncData.firstChild.classList.remove('loading')
 }
 

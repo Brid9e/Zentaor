@@ -18,31 +18,7 @@ syncData.addEventListener("click", async () => {
     return
   }
   syncDatas(true)
-  // let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  // chrome.scripting.executeScript({
-  //   target: { tabId: tab.id },
-  //   function: setPageBackgroundColor,
-  // });
 });
-
-// The body of this function will be execuetd as a content script inside the
-// current page
-// function setPageBackgroundColor() {
-//   chrome.storage.sync.get("msg", () => {
-//     chrome.syncDatas(true)
-//   });
-// }
-
-// const bg = chrome.extension.getBackgroundPage()
-// setInterval(() => {
-//   chrome.runtime.sendMessage({ code: 200, from: 'popup' }, (res) => {
-//     console.log('我收到了来自background的消息', res)
-//     if (res.month_data || res.day_data || res.all_data) {
-//       localStorage.log_history = JSON.stringify(res)
-//     }
-//   });
-// }, 500);
-
 
 class Model {
   dark() {

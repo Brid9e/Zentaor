@@ -13,6 +13,8 @@ td{
   cursor: pointer;
   outline: none;
   border-collapse: collapse;
+  overflow: hidden;
+  text-overflow: ellipsis
 }
 
 table{
