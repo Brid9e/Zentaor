@@ -1,17 +1,12 @@
-// Initialize butotn with users's prefered color
 let syncData = document.getElementById("syncData");
 let fromBg = document.getElementById("fromBg");
 const darkLight = document.getElementById("dark-light");
-// chrome.storage.sync.get("msg", ({ msg }) => {
-//   // syncData.style.backgroundColor = color;
-//   console.log(msg)
-// });
+
 
 if (!localStorage.model) {
   localStorage.model = 'light'
 }
 
-// When the button is clicked, inject setPageBackgroundColor into current page
 syncData.addEventListener("click", async () => {
   syncData.firstChild.classList.add('loading')
   if (isLoading) {
@@ -27,7 +22,6 @@ class Model {
     document.documentElement.style.setProperty("--color-hover", "var(--color-sub-dark)");
     document.documentElement.style.setProperty("--color-hover-1", "var(--color-light)");
     document.documentElement.style.setProperty("--color-high-light", "var(--color-light)");
-    // --color-info-4
   }
   light() {
     document.documentElement.style.setProperty("--color-bg", "var(--color-light)");
@@ -37,6 +31,7 @@ class Model {
     document.documentElement.style.setProperty("--color-high-light", "var(--color-font)");
   }
 }
+
 const _model = new Model
 
 window.onload = () => {
@@ -57,4 +52,9 @@ darkLight.addEventListener("click", () => {
     localStorage.model = 'light'
   }
 });
+
+axios.get('./manifest.json').then(r => {
+  const version = document.querySelector('.version-box')
+  version.innerText = r.data.version
+})
 
