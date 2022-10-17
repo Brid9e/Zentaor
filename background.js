@@ -7,17 +7,17 @@ chrome.runtime.onInstalled.addListener(() => {
 
 let data
 // 监听来自content-script的消息
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  // console.log('收到来自content-script的消息：');
-  // console.log(request, sender, sendResponse)
-  if (request.from === 'content') {
-    sendResponse(request);
-    data = request.data
-  }
-  if (request.from === 'popup') {
-    sendResponse(data || '还没获取到数据');
-  }
-});
+// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+//   // console.log('收到来自content-script的消息：');
+//   // console.log(request, sender, sendResponse)
+//   if (request.from === 'content') {
+//     sendResponse(request);
+//     data = request.data
+//   }
+//   if (request.from === 'popup') {
+//     sendResponse(data || '还没获取到数据');
+//   }
+// });
 
 // const tabStorage = {};
 

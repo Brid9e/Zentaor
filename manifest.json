@@ -1,7 +1,7 @@
 {
   "name": "Zentaor",
   "description": "The best Zentao plugin.",
-  "version": "0.0.1",
+  "version": "1.0.2",
   "manifest_version": 3,
   "permissions": [
     "storage",

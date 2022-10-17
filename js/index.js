@@ -24,66 +24,81 @@
 //   console.log(window.location.href)
 // })
 let dialog
-let d_table
+let d_table_
 let d_form
 let iframe
 let body
 let doc
 let nav
 let today_h = 0
-let today
+let today_
 let allPage = 0
 let allItem = 0
 let pageSize = 0
 let _history = {}
 let isChange = false
-window.onload = () => {
-  chrome.syncDatas = (type) => {
-    const _href = window.location.href
-    if (_href !== 'http://zentao.xzxyun.com/zentao/my-work-task.html') {
-      if (!type) return
-      alert('您只能在任务界面同步数据！')
-      return
-    }
-    today_h = 0
-    _history = {}
-    dialog = null
-    if (nav) {
-      nav.removeChild(nav.lastElementChild)
-    }
-    today = dayjs().format('YYYY-MM-DD')
-    initDom()
-    initLoading()
-    initDialog()
+let isSyncing = false
+let isLogin = false
+let isLoading = false
+async function syncDatas(type) {
+  // const _href = window.location.href
+  // if (_href !== 'http://zentao.xzxyun.com/zentao/my-work-task.html') {
+  //   if (!type) return
+  //   alert('您只能在任务界面同步数据！')
+  //   return
+  // }
+  today_h = 0
+  _history = {}
+  dialog = null
+  // if (nav) {
+  //   nav.removeChild(nav.lastElementChild)
+  // }
+  today_ = dayjs().format('YYYY-MM-DD')
+  await initDom()
+  if (isLogin) {
+    isLoading = true
     initListData(type)
+  } else {
+    alert('请先登录！')
   }
-  chrome.syncDatas()
-};
+}
+// chrome.syncDatas(false)
 
 
 async function initDom() {
-  iframe = document.querySelector('iframe');
-  doc = iframe.contentWindow.document
-  nav = doc.querySelector('#subNavbar').children[0]
-  allPage = doc.querySelector('.pager').children[4].children[0].children[1].innerText
-  allItem = doc.querySelector('.pager').children[0].children[0].children[0].innerText
-  pageSize = doc.querySelector('.pager').children[1].children[0].children[0].children[0].innerText
-  iframe.addEventListener('load', async () => {
-    const _href = window.location.href
-    if (_href !== 'http://zentao.xzxyun.com/zentao/my-work-task.html') return
-    chrome.syncDatas(false)
-  })
+
+  doc = await getTask()
+  const pager = doc.querySelector('.pager')
+  console.log(!pager)
+  if (!pager) {
+    isLogin = false
+    return
+  }
+  isLogin = true
+  allItem = pager.getAttribute('data-rec-total')
+  pageSize = pager.getAttribute('data-rec-per-page')
+  allPage = Math.round(Number(allItem) / Number(pageSize))
+  // allPage = doc.querySelector('.pager')?.children[4]?.children[0]?.children[1]?.innerText
+  // allItem = doc.querySelector('.pager')?.children[0]?.children[0]?.children[0]?.innerText
+  // pageSize = doc.querySelector('.pager')?.children[1]?.children[0]?.children[0]?.children[0]?.innerText
+  // nav = doc.querySelector('#subNavbar').children[0]
+  // chrome.syncDatas(false)
+
+  // iframe.addEventListener('load', async () => {
+  //   const _href = window.location.href
+  //   if (_href !== 'http://zentao.xzxyun.com/zentao/my-work-task.html') return
+  // })
 }
 
 function initDialog() {
   body = document.body;
   dialog = document.createElement('div')
   d_form = document.createElement('form')
-  d_table = document.createElement('table')
+  d_table_ = document.createElement('table')
   d_form.className = 'main-table table-task skip-iframe-modal'
-  d_table.className = 'table has-sort-head table-fixed'
+  d_table_.className = 'table has-sort-head table-fixed'
   dialog.className = 'plugin-dialog'
-  d_form.appendChild(d_table)
+  d_form.appendChild(d_table_)
   dialog.appendChild(d_form)
   body.appendChild(dialog)
 }
@@ -96,7 +111,7 @@ async function initLoading() {
   _a.className = 'loading'
   _a.innerHTML = `数据加载中...`
   _li.appendChild(_a)
-  // nav.innerHTML = nav.innerHTML + `<li class="today-add" ></li>`
+  // nav.innerHTML = nav.innerHTML + `<li class="today_-add" ></li>`
   nav.appendChild(_li)
   console.log(nav)
 }
@@ -132,9 +147,7 @@ async function initListData(type = false) {
  */
 async function getAllData(needReload = true) {
   let id_arr = []
-  let today_add = []
   if (needReload) {
-    console.log(needReload)
     for (let i = 1; i <= allPage; i++) {
       const id_item = await getDetailAll(i)
       id_arr = [...id_arr, ...id_item]
@@ -149,13 +162,10 @@ async function getAllData(needReload = true) {
       _history[key.split('_')[0]] ? _history[key.split('_')[0]].push(page_data[key]) : _history[key.split('_')[0]] = [page_data[key]]
     })
   }
-  if (_history[today]) {
-    today_add = _history[today]
-  }
-  dataToTodayTable(today_add)
-  loadTodyDataModel()
-  eventListener()
-  saveToLocal(_history)
+  // dataTotoday_Table(today__add)
+  // loadTodyDataModel()
+  // eventListener()
+  // saveToLocal(_history)
   saveMonthLocal(_history)
 }
 
@@ -261,7 +271,6 @@ async function getDetailAll(_page) {
         reject(err)
       });
   })
-
 }
 
 
@@ -322,14 +331,14 @@ async function getPageAllDetails(id_arr) {
  */
 function eventListener() {
   nav.addEventListener('mouseenter', (e) => {
-    if (e.target.className === 'today-add') {
+    if (e.target.className === 'today_-add') {
       dialog.style.display = 'block'
       dialog.style.top = e.target.parentNode.offsetHeight + 55 + 'px'
       dialog.style.left = e.target.parentNode.offsetLeft - 400 + 'px'
     }
   }, true)
   nav.addEventListener('mouseout', (e) => {
-    if (e.target.className === 'today-add') {
+    if (e.target.className === 'today_-add') {
       dialog.style.display = 'none'
     }
   })
@@ -345,12 +354,12 @@ function eventListener() {
 function loadTodyDataModel() {
   let _li = document.createElement('li')
   let _a = document.createElement('a')
-  _li.className = 'today-add'
-  _a.className = 'today-add'
+  _li.className = 'today_-add'
+  _a.className = 'today_-add'
   _a.innerHTML = `今日已填<span class="label label-light label-badge" style="pointer-events: none;">${today_h}h</span>`
   _li.appendChild(_a)
   nav.removeChild(nav.lastElementChild)
-  // nav.innerHTML = nav.innerHTML + `<li class="today-add" ></li>`
+  // nav.innerHTML = nav.innerHTML + `<li class="today_-add" ></li>`
   nav.appendChild(_li)
 }
 
@@ -393,8 +402,9 @@ function saveMonthLocal(_history) {
     !_obj[month_item] ? _obj[month_item] = time_add : _obj[month_item] = _obj[month_item] + time_add
   })
   const _finalData = { month_data: _obj, day_data: _obj_day, all_data: _history }
-  localStorage.setItem('log_month_history', JSON.stringify(_finalData))
-  chrome.runtime.sendMessage({ from: 'content', data: _finalData }, () => { });
+  localStorage.setItem('log_history', JSON.stringify(_finalData))
+  isLoading = false
+  syncData.firstChild.classList.remove('loading')
 }
 
 /**
@@ -404,16 +414,39 @@ function saveMonthLocal(_history) {
  * @description: 数据插入表格
  *
  */
-function dataToTodayTable(today_add) {
-  if (!today_add || today_add.length == 0) {
+function dataTotoday_Table(today__add) {
+  if (!today__add || today__add.length == 0) {
     let _empty = document.createElement('div')
     _empty.className = 'plugin-empty'
     _empty.innerText = '今日还未填写'
-    d_table.appendChild(_empty)
+    d_table_.appendChild(_empty)
     return
   }
   let theader = document.createElement('thead')
   theader.innerHTML = '<th style="width:80px;">ID</th><th>任务名称</th><th style="width:100px;">时间</th><th style="width:80px;">已填</th><th style="width:80px;">预计剩余</th><th>备注</th>'
-  d_table.appendChild(theader)
-  d_table.appendChild(handleTableData(today_add))
+  d_table_.appendChild(theader)
+  d_table_.appendChild(handleTableData(today__add))
+}
+
+/**
+ *
+ * @Date: 2022-10-17 19:21:46 
+ * @Author: Joe 
+ * @Description: 获取任务列表
+ *
+ */
+async function getTask() {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        `http://zentao.xzxyun.com/zentao/my-work-task.html`
+      )
+      .then((r) => {
+        const doc = htmlToDom(r.data)
+        resolve(doc)
+      })
+      .catch(err => {
+        reject(err)
+      });
+  })
 }

@@ -13,7 +13,8 @@ const addYearDom = document.getElementById('add-year')
 const subYearDom = document.getElementById('sub-year')
 
 if (data) {
-  if(isEmpty) isEmpty = null
+  if (isEmpty) isEmpty = null
+  console.log(year, month)
   tableBox.innerHTML = calendar(year, month)
 } else {
   isEmpty = document.createElement('div')

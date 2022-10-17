@@ -25,6 +25,7 @@ function calendar(y, m) {
 
   let html = '<div class="cal-box">';
 
+  console.log(data)
   html += '<table class="cal-main" >';
   html += `<tr class="cal-title"><th colspan="7"><span>${y}年${m}月</span><span>${data.month_data[ `${y}-${m > 9 ? m : '0' + m}` ] ? `本月已填：<span>${data.month_data[ `${y}-${m > 9 ? m : '0' + m}` ] || ''}</span>` : '本月还未填写'} </span></th></tr>`;
   html += '<tr class="cal-week"><td>日</td><td>一</td><td>二</td><td>三</td><td>四</td><td>五</td><td>六</td></tr>';
