@@ -4,6 +4,8 @@
   "version": "1.0.2",
   "manifest_version": 3,
   "permissions": [
+    "contextMenus",
+    "notifications",
     "storage",
     "activeTab",
     "scripting",
@@ -12,6 +14,7 @@
   "host_permissions": [
     "*://*/*"
   ],
+  "homepage_url": "http://zentao.xzxyun.com/zentao/my-work-task.html",
   "background": {
     "service_worker": "background.js"
   },
@@ -34,7 +37,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/listenerPage.js"],
+      "js": ["background.js"],
       "css": [
         "css/item.css"
       ]

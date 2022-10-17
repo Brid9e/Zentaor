@@ -1,11 +1,21 @@
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.get("msg", ({ msg }) => {
-    // syncData.style.backgroundColor = color;
-  });
-  // console.log('Default background color set to %cgreen', `color: ${color}`);
-});
+// chrome.runtime.onInstalled.addListener(() => {
+//   chrome.storage.sync.get("msg", ({ msg }) => {
+//     // syncData.style.backgroundColor = color;
+//   });
+//   // console.log('Default background color set to %cgreen', `color: ${color}`);
+// });
 
-let data
+chrome.contextMenus.create({
+  title: "测试右键菜单",
+  onclick: function () {
+    chrome.notifications.create(null, {
+      type: 'basic',
+      // iconUrl: 'img/icon.png',
+      title: '这是标题',
+      message: '您刚才点击了自定义右键菜单！'
+    });
+  }
+});
 // 监听来自content-script的消息
 // chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 //   // console.log('收到来自content-script的消息：');
