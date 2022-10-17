@@ -5,18 +5,26 @@
 //   // console.log('Default background color set to %cgreen', `color: ${color}`);
 // });
 
-// chrome.contextMenus.create({
-//   id: 'open-zentao',
-//   title: '打开禅道'
-// });
+chrome.contextMenus.create({
+  id: 'open-zentao',
+  title: '打开禅道'
+});
 
-// chrome.contextMenus.onClicked.addListener(function (info, tab) {
-//   switch (info.menuItemId) {
-//     case 'open-zentao':
-//       chrome.tabs.create({ url: 'http://zentao.xzxyun.com/zentao/my-work-task.html' });
-//       break;
-//   }
-// });
+chrome.contextMenus.create({
+  id: 'setting',
+  title: '设置'
+});
+
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+  switch (info.menuItemId) {
+    case 'open-zentao':
+      chrome.tabs.create({ url: 'http://zentao.xzxyun.com/zentao/my-work-task.html' });
+      break;
+    case 'setting':
+      chrome.tabs.create({ url: './setting.html' });
+      break;
+  }
+});
 
 // 监听来自content-script的消息
 // chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {

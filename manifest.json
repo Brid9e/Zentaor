@@ -4,10 +4,10 @@
   "version": "1.0.2",
   "manifest_version": 3,
   "permissions": [
-    "contextMenus",
     "storage",
     "activeTab",
     "scripting",
+    "contextMenus",
     "declarativeContent"
   ],
   "host_permissions": [
@@ -39,7 +39,7 @@
         "<all_urls>"
       ],
       "js": [
-        "page.js"
+        "js/page.js"
       ],
       "css": [
         "css/item.css"
