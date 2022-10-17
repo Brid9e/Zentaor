@@ -59,6 +59,7 @@ async function syncDatas(type) {
     isLoading = true
     initListData(type)
   } else {
+    syncData.firstChild.classList.remove('loading')
     alert('请先登录！')
   }
 }
